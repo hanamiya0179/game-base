@@ -22,22 +22,26 @@
             <h1>ゲーム攻略基地</h1>
         </div>
 
-        <!-- 🟢 2行目：ランク ＋ ユーザー名 (＋アバター) -->
+        <!-- 🟢 2行目：ユーザー情報（ログイン時） ＋ ログインボタン（未ログイン時） -->
         <div class="header-row-2">
-            <img id="user-avatar" src="..." alt="avatar">
-            <span class="rank-badge rank-apprentice">見習い</span>
-            <span id="user-name">ユーザー名</span>
+            <!-- 🔑 未ログイン時に表示されるボタン -->
+            <button id="login-btn" class="btn-logout" style="display: none;">Discordでログイン</button>
+
+            <!-- 👤 ログイン時に表示される情報エリア -->
+            <div id="user-info" style="display: flex; align-items: center; gap: 8px;">
+                <img id="user-avatar" src="" alt="avatar">
+                <span id="user-rank" class="rank-badge rank-apprentice">見習い</span>
+                <span id="user-name">ユーザー名</span>
+            </div>
         </div>
 
         <!-- 🟢 3行目：BGM ＋ 音量 ＋ ログアウト -->
         <div class="header-row-3">
             <div class="bgm-control-group">
-                <!-- 1. id を "bgm-btn" に変更し、onclick で toggleBGM() を呼ぶ -->
                 <button id="bgm-btn" class="btn-bgm" onclick="toggleBGM()">🔇 BGM: OFF</button>
 
                 <div class="volume-container">
                     <span class="volume-icon">🔊</span>
-                    <!-- 2. valueを初期音量の0.05に合わせ、oninput で changeVolume(this.value) を呼ぶ -->
                     <input type="range" id="bgm-volume" min="0" max="1" step="0.01" value="0.05"
                         oninput="changeVolume(this.value)">
                 </div>
