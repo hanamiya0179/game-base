@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲーム攻略基地</title>
+    <!-- 外にある style.css を読み込みます -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 🟢 CDNからSupabaseのライブラリを読み込みます -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>ゲーム攻略基地</h1>
+
+        <!-- 🟢 1. ログイン前エリア -->
+        <div id="login-area">
+            <button id="login-btn" class="btn">Discordでログイン</button>
+        </div>
+
+        <!-- 🟢 2. ログイン後エリア（ユーザー情報） -->
+        <div id="user-info">
+            <!-- 1. ランクバッジ（一番左） -->
+            <span id="user-rank" class="rank-badge rank-apprentice">[ 見習い ]</span>
+            <!-- 2. ユーザーアイコン -->
+            <img id="user-avatar" src="avatar.png" alt="ユーザーアイコン">
+            <!-- 3. ユーザー名 -->
+            <span id="user-name">ゲストユーザー</span>
+
+            <!-- 🟢 👈 追加：BGM切り替えボタン -->
+            <button id="bgm-btn" class="btn-bgm" onclick="toggleBGM()">🔇 BGM: OFF</button>
+
+            <!-- 🟢 👈 追加：音量調節スライダー（0〜100% / 初期値5%） -->
+            <div class="volume-container">
+                <span class="volume-icon">🔊</span>
+                <input type="range" id="bgm-volume" min="0" max="1" step="0.01" value="0.05" oninput="changeVolume(this.value)">
+            </div>
+            <!-- 4. ログアウトボタン -->
+            <button id="logout-btn" class="btn-logout">ログアウト</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 🟢 シンプルなタブメニュー -->
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="switchTab(event, 'builds')">最強構成</button>
+            <button class="tab-btn" onclick="switchTab(event, 'updates')">アプデまとめ</button>
+            <button class="tab-btn" onclick="switchTab(event, 'gallery')">ハイライト</button>
+            <button class="tab-btn" onclick="switchTab(event, 'profile')">メンバー挨拶</button>
+
+            <!-- 👈 特製カラーボタンを追加！ -->
+            <button class="tab-btn tab-gacha" onclick="switchTab(event, 'gacha')">ガチャ</button>
+            <button class="tab-btn tab-shop" onclick="switchTab(event, 'shop')">ショップ</button>
+
+            <div id="user-points" class="point-badge">
+                <span class="point-icon">🪙</span>
+                <span id="point-count">100</span> pt
+            </div>
+        </div>
+
+        <!--1. 最強構成（投稿フォーム） -->
+        <div id="tab-builds" class="tab-content active">
+            <section class="post-form">
+                <h2>最強構成を投稿する</h2>
+                <form onsubmit="event.preventDefault(); alert('（ガワだけなのでまだ送信されません。次のステップで動かします！）');">
+                    <!-- 🟢 1. ゲームタイトルの入力欄 -->
+                    <div class="form-group">
+                        <label>ゲームタイトル</label>
+                        <input type="text" placeholder="例：原神、モンスト など">
+                    </div>
+
+                    <!-- 🟢 2. ビルドタイトルの入力欄 -->
+                    <div class="form-group">
+                        <label>構成名・タイトル</label>
+                        <input type="text" placeholder="例：ボス周回用・会心特化型">
+                    </div>
+
+                    <!-- 3. タグ選択 -->
+                    <div class="form-group">
+                        <label>おすすめタグ</label>
+                        <select>
+                            <option>初心者向け</option>
+                            <option>ボス周回用</option>
+                            <option>ネタ・ロマン編成</option>
+                        </select>
+                    </div>
+
+                    <!-- 4. 詳細入力 -->
+                    <div class="form-group">
+                        <label>装備・スキルの詳細</label>
+                        <textarea rows="4" placeholder="武器：◯◯&#10;防具：◯◯&#10;立ち回りのコツなど..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">メンバーに共有する</button>
+                </form>
+            </section>
+        </div>
+
+        <!--2. アプデまとめ -->
+        <div id="tab-updates" class="tab-content">
+            <section class="post-form">
+                <h2>最新アプデ情報をまとめる</h2>
+                <form onsubmit="event.preventDefault(); alert('（まだ送信されません）');">
+
+                    <!-- 🟢 👈 追加：ゲームタイトルの入力欄 -->
+                    <div class="form-group">
+                        <label>ゲームタイトル</label>
+                        <input type="text" placeholder="例：原神、モンスト、APEX など">
+                    </div>
+
+                    <!-- アプデ・ニュースのタイトル -->
+                    <div class="form-group">
+                        <label>アプデ・ニュースのタイトル</label>
+                        <input type="text" placeholder="例：Ver.2.1 大型アップデート情報まとめ">
+                    </div>
+
+                    <!-- 対象バージョン / 日付 -->
+                    <div class="form-group">
+                        <label>対象バージョン / 日付</label>
+                        <input type="text" placeholder="例：Ver 2.1.0（2026/09/22実施）">
+                    </div>
+
+                    <!-- アプデの概要・調整内容 -->
+                    <div class="form-group">
+                        <label>アプデの概要・調整内容</label>
+                        <textarea rows="5" placeholder="・新キャラ実装&#10;・武器の上方修正..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">記事を投稿する</button>
+                </form>
+            </section>
+        </div>
+
+        <!--3. ハイライト（ギャラリー） -->
+        <div id="tab-gallery" class="tab-content">
+            <section>
+                <h2>ハイライト</h2>
+                <div class="gallery-grid">
+                    <!-- サンプルカード1 -->
+                    <div class="gallery-card">
+                        <div class="gallery-img">【ここにスクショ画像が入る】</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">奇跡のガチャ10連で神引きしたわｗｗ</div>
+                            <div class="stamp-area">
+                                <button class="stamp-btn" onclick="countUp(this)">🎉 5</button>
+                                <button class="stamp-btn" onclick="countUp(this)">😭 0</button>
+                                <button class="stamp-btn" onclick="countUp(this)">🤣 1</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- サンプルカード2 -->
+                    <div class="gallery-card">
+                        <div class="gallery-img">【ここにスクショ画像が入る】</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">裏ボス、残りHP1ミリで大爆死</div>
+                            <div class="stamp-area">
+                                <button class="stamp-btn" onclick="countUp(this)">🎉 0</button>
+                                <button class="stamp-btn" onclick="countUp(this)">😭 12</button>
+                                <button class="stamp-btn" onclick="countUp(this)">🤣 4</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- サンプルカード3 -->
+                    <div class="gallery-card">
+                        <div class="gallery-img">【ここにスクショ画像が入る】</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">壁に埋まる謎のバグ発見した</div>
+                            <div class="stamp-area">
+                                <button class="stamp-btn" onclick="countUp(this)">🎉 0</button>
+                                <button class="stamp-btn" onclick="countUp(this)">😭 12</button>
+                                <button class="stamp-btn" onclick="countUp(this)">🤣 4</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <!--4. メンバー挨拶（新規追加） -->
+        <div id="tab-profile" class="tab-content">
+            <section class="post-form">
+                <h2>メンバー挨拶・自己紹介</h2>
+                <form onsubmit="event.preventDefault(); alert('（自己紹介を送信しました！※次のステップで保存機能を追加します）');">
+                    <!-- 1. よく遊ぶタイトル -->
+                    <div class="form-group">
+                        <label>よく遊ぶゲームタイトル</label>
+                        <input type="text" placeholder="例：APEX、原神、FF14、モンスターハンター など">
+                    </div>
+
+                    <!-- 2. 活動時間帯 -->
+                    <div class="form-group">
+                        <label>主な活動時間帯</label>
+                        <select>
+                            <option>平日夜（20時〜24時頃）</option>
+                            <option>休日メイン（昼〜夜）</option>
+                            <option>深夜帯（24時〜）</option>
+                            <option>朝〜昼メイン</option>
+                            <option>不定期・ランダム</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. 自己紹介 -->
+                    <div class="form-group">
+                        <label>ちょっとした自己紹介・ひとこと</label>
+                        <textarea rows="4" placeholder="例：VC(通話)可能です！エンジョイ派なので気軽に誘ってください！好きなロールはサポートです。"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">挨拶カードを作成・更新する</button>
+                </form>
+            </section>
+        </div>
+
+        <!--5. ガチャ画面 -->
+        <div id="tab-gacha" class="tab-content">
+            <section class="post-form">
+                <h2>基地ガチャ</h2>
+                <p style="color: #aaa;">コミュニティポイントを消費して限定称号や枠をゲットしよう！</p>
+                <div style="text-align: center; padding: 40px 0;">
+                    <div class="gacha-portal">
+                        <span></span>
+                    </div>
+
+                    <button class="btn btn-gacha" onclick="alert('🎉 SSR称号［神引きの主］を獲得しました！（ダミー演出）')">1回ガチャを回す
+                        (100pt)</button>
+                </div>
+            </section>
+        </div>
+
+        <!--6. ショップ画面 -->
+        <div id="tab-shop" class="tab-content">
+            <section class="post-form">
+                <h2>ポイントショップ</h2>
+                <p style="color: #aaa;">貯めたポイントで好きな報酬と交換できます。</p>
+                <div class="gallery-grid" style="margin-top: 20px;">
+                    <!-- サンプル商品1 -->
+                    <div class="gallery-card" style="padding: 15px;">
+                        <h3 style="color: #00ffcc; margin-top: 0;">特別カラーロール</h3>
+                        <p style="font-size: 13px; color: #ccc;">Discordで目立つゴールドの限定カラーロールです。</p>
+                        <button class="btn" style="width: 100%; font-size: 14px;">500pt で交換</button>
+                    </div>
+                    <!-- サンプル商品2 -->
+                    <div class="gallery-card" style="padding: 15px;">
+                        <h3 style="color: #00ffcc; margin-top: 0;">記事ピン留め権</h3>
+                        <p style="font-size: 13px; color: #ccc;">自分の投稿をトップページの一番上に24時間固定できます。</p>
+                        <button class="btn" style="width: 100%; font-size: 14px;">300pt で交換</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- 🟢 supabase.js と main.js を順に読み込みます -->
+    <script src="js/supabase.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+
+</html>

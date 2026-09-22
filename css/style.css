@@ -1,0 +1,603 @@
+/* ===================================================
+   🎨 全体デザイン設定（黒基調・ネオンゲーミング風）
+   =================================================== */
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-image: url('../img/img2.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------------------------------------------------
+   ヘッダー & ユーザー情報
+   --------------------------------------------------- */
+header {
+    background-color: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(5px);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #333;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #00ffcc;
+    text-shadow:
+        0 0 5px #00ffcc,
+        0 0 10px #00ffcc,
+        0 0 20px #00ffcc;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+}
+
+#user-name {
+    font-weight: bold;
+    color: #fff;
+}
+
+/* ---------------------------------------------------
+   レイアウト & タブメニュー
+   --------------------------------------------------- */
+.container {
+    max-width: 900px;
+    margin: 100px auto;
+    padding: 0 15px;
+}
+
+h2 {
+    border-left: 4px solid #00ffcc;
+    padding-left: 10px;
+    font-size: 20px;
+    color: #fff;
+    margin-top: 0;
+}
+
+/* ---------------------------------------------------
+   🟢 タブメニュー全体
+   --------------------------------------------------- */
+.tab-menu {
+    display: flex;
+    gap: 10px;
+    align-items: center; /* ボタンとバッジを中央に整列 */
+    flex-wrap: wrap;
+    
+    /* 🟢 余白を初期のスマートなサイズ（15px〜20px程度）に戻す */
+    margin-top: 0;
+    margin-bottom: 15px !important; 
+}
+
+.tab-btn {
+    background: rgba(38, 38, 38, 0.8);
+    border: 1px solid #444;
+    color: #aaa;
+    font-size: 15px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: #fff;
+    border-color: #00ffcc;
+}
+
+.tab-btn.active {
+    background-color: #00ffcc;
+    color: #111;
+    border-color: #00ffcc;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ---------------------------------------------------
+   投稿フォーム & カード共通
+   --------------------------------------------------- */
+.post-form,
+.card {
+    background-color: rgba(38, 38, 38, 0.85);
+    backdrop-filter: blur(5px);
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #00ffcc;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #00ffcc;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #00ffcc;
+    box-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
+}
+
+/* ---------------------------------------------------
+   ボタン類
+   --------------------------------------------------- */
+.btn {
+    background-color: transparent;
+    color: #ff007f;
+    border: 2px solid #ff007f;
+    padding: 10px 24px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px #ff007f;
+}
+
+.btn:hover {
+    background-color: #ff007f;
+    color: #111;
+    box-shadow:
+        0 0 10px #ff007f,
+        0 0 20px #ff007f,
+        0 0 30px #ff007f;
+}
+
+.btn-logout {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: #ff007f;
+    border-color: #ff007f;
+    color: #fff;
+}
+
+/* ---------------------------------------------------
+   ギャラリー (ハイライト)
+   --------------------------------------------------- */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.gallery-card {
+    background-color: rgba(38, 38, 38, 0.85);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+}
+
+.gallery-card:hover {
+    border-color: #00ffcc;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+    transform: translateY(-5px);
+}
+
+.gallery-img {
+    width: 100%;
+    height: 160px;
+    background-color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+}
+
+.gallery-content {
+    padding: 15px;
+}
+
+.gallery-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.stamp-area {
+    display: flex;
+    gap: 8px;
+}
+
+.stamp-btn {
+    background-color: #222;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.stamp-btn:hover {
+    background-color: #333;
+    border-color: #00ffcc;
+}
+
+/* ---------------------------------------------------
+   アプデまとめ記事
+   --------------------------------------------------- */
+.update-badge {
+    display: inline-block;
+    background-color: #ff007f;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 0 5px #ff007f;
+}
+
+.update-preview {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* ===================================================
+   🏆 ランクバッジ＆発光エフェクト
+   =================================================== */
+
+.rank-badge {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid currentColor;
+    display: inline-block;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* 見習い (うっすらグレー〜ブルーで光る) */
+.rank-apprentice {
+    color: #94a3b8;
+    border-color: #94a3b8;
+    box-shadow: 0 0 6px rgba(148, 163, 184, 0.4);
+}
+
+/* 構成員 (グリーン発光) */
+.rank-member {
+    color: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+/* 幹部 (ブルー発光) */
+.rank-exec {
+    color: #3b82f6;
+    border-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+}
+
+/* 参謀 (パープル発光) */
+.rank-staff {
+    color: #a855f7;
+    border-color: #a855f7;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.7);
+}
+
+/* 首領 (ゴールド発光) */
+.rank-boss {
+    color: #ffd700;
+    border-color: #ffd700;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+/* 👑 御意見番 (ネオンピンク点滅発光) */
+.rank-legend {
+    color: #ff007f;
+    border-color: #ff007f;
+    background: rgba(255, 0, 127, 0.15);
+    box-shadow: 0 0 12px #ff007f, 0 0 20px #ff007f;
+    animation: rankGlow 1.5s infinite alternate;
+}
+
+@keyframes rankGlow {
+    0% {
+        box-shadow: 0 0 8px #ff007f;
+    }
+    100% {
+        box-shadow: 0 0 18px #ff007f, 0 0 28px #ff007f;
+    }
+}
+
+/* ---------------------------------------------------
+   🎰 ガチャ＆🛒 ショップ専用タブカラー
+   --------------------------------------------------- */
+
+/* ガチャボタン（ゴールド風） */
+.tab-btn.tab-gacha:hover,
+.tab-btn.tab-gacha.active {
+    background-color: #ffd700;
+    color: #111;
+    border-color: #ffd700;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+}
+
+/* ショップボタン（パープルネオン風） */
+.tab-btn.tab-shop:hover,
+.tab-btn.tab-shop.active {
+    background-color: #a855f7;
+    color: #fff;
+    border-color: #a855f7;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
+}
+
+/* ガチャ実行ボタン（ギラギラ発光） */
+.btn-gacha {
+    color: #ffd700;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px #ffd700;
+    font-size: 18px;
+    padding: 12px 30px;
+}
+
+.btn-gacha:hover {
+    background-color: #ffd700;
+    color: #111;
+    box-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700;
+}
+
+/* 🔮 ガチャのネオンポータル演出 */
+.gacha-portal {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 25px auto;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 0, 127, 0.1) 70%);
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 15px #ffd700, inset 0 0 15px #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    animation: portalRotate 4s linear infinite;
+}
+
+@keyframes portalRotate {
+    0% { transform: rotate(0deg) scale(1); box-shadow: 0 0 15px #ffd700; }
+    50% { transform: rotate(180deg) scale(1.08); box-shadow: 0 0 25px #ff007f; border-color: #ff007f; }
+    100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 15px #ffd700; }
+}
+
+/* ---------------------------------------------------
+   🪙 所持ポイント表示バッジ
+   --------------------------------------------------- */
+.point-badge {
+    margin-left: auto; /* 右端へ配置 */
+    
+    /* 🟢 ボタン（.tab-btn）の縦幅とピッタリ合わせる */
+    height: 41px;
+    box-sizing: border-box;
+    
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 35, 10, 0.95));
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    padding: 0 14px;
+    border-radius: 6px; /* ボタンに合わせて角丸を揃える場合 */
+    font-weight: bold;
+    font-size: 14px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    white-space: nowrap;
+
+    /* 余計なずらしをクリア */
+    align-self: center;
+    margin-top: 0 !important;
+}
+
+.point-icon {
+    font-size: 16px;
+}
+
+#point-count {
+    font-size: 16px;
+    color: #ffffff;
+    /* 🟢 改善点: 数字の文字周りに黒い影をつけてくっきり読めるようにする */
+    text-shadow: 0 0 5px #ffd700, 0 1px 2px #000;
+}
+
+/* ---------------------------------------------------
+   🎵 BGM ON/OFF スイッチボタン
+   --------------------------------------------------- */
+.btn-bgm {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #00ffcc;
+    border: 1px solid #00ffcc;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
+}
+
+.btn-bgm:hover {
+    background-color: #00ffcc;
+    color: #111;
+    box-shadow: 0 0 12px #00ffcc;
+}
+
+/* 演奏中（ON）の時のスタイル */
+.btn-bgm.playing {
+    background-color: rgba(255, 0, 127, 0.2);
+    color: #ff007f;
+    border-color: #ff007f;
+    box-shadow: 0 0 8px #ff007f;
+}
+
+/* ---------------------------------------------------
+   🎛️ 音量調節スライダーのデザイン
+   --------------------------------------------------- */
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 10px;
+    border-radius: 15px;
+    border: 1px solid #333;
+}
+
+.volume-icon {
+    font-size: 12px;
+}
+
+/* スライダー本体 */
+#bgm-volume {
+    width: 60px; /* 横幅（コンパクトに設定） */
+    height: 4px;
+    accent-color: #00ffcc; /* ネオンカラーのつまみ */
+    cursor: pointer;
+}
+
+/* ===================================================
+   📱 画面サイズに応じた自動最適化（レスポンシブ設定）
+   =================================================== */
+
+/* ---------------------------------------------------
+   📱 スマホ向け設定 (画面幅 768px 以下)
+   --------------------------------------------------- */
+@media (max-width: 768px) {
+
+    /* 🟢 1. ヘッダーを縦に並べて押し込みを解消 */
+    header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        text-align: center;
+    }
+
+    #user-info {
+        flex-wrap: wrap; /* 要素が多くなっても自動で折り返す */
+        justify-content: center;
+        gap: 8px;
+    }
+
+    /* 🟢 2. タブメニューを横スクロール対応にしてスッキリさせる */
+    .tab-menu {
+        display: flex;
+        flex-wrap: nowrap; /* 縦に崩れず1行に収める */
+        overflow-x: auto;  /* はみ出た分は横スクロールできるようにする */
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch; /* スマホで指スワイプを滑らかにする */
+    }
+
+    .tab-btn {
+        flex: 0 0 auto; /* ボタンの幅を縮めずに維持 */
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+
+    .point-badge {
+        flex: 0 0 auto;
+        margin-left: 0; /* スマホ時はスクロールエリア内に自然に並べる */
+        height: 35px;
+    }
+
+    /* 🟢 3. 投稿フォームやカードの余白を少し詰める */
+    .container {
+        padding: 0 10px;
+        margin: 15px auto;
+    }
+
+    .post-form, .card {
+        padding: 15px;
+    }
+
+    /* 🟢 4. ギャラリー・ショップの商品を1列表示に */
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------------------------------------------
+   📱 タブレット / iPad 向け設定 (画面幅 769px 〜 1024px)
+   --------------------------------------------------- */
+@media (min-width: 769px) and (max-width: 1024px) {
+    
+    /* 🟢 ギャラリー・ショップを2列表示にする */
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .container {
+        max-width: 90%;
+    }
+}
