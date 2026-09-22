@@ -2,15 +2,27 @@
    🎨 全体デザイン設定（黒基調・ネオンゲーミング風）
    =================================================== */
 
-body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+/* 🟢 スマホでも確実に背景画像を画面全体に固定する設定 */
+.bg-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background-image: url('../img/img2.jpg');
-    background-attachment: fixed;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1; /* コンテンツの裏側に配置 */
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     color: #e0e0e0;
     margin: 0;
     padding: 0;
+    background-color: #111; /* ★スクロールの端で引っ張った時に見え隠れする下地色（黒） */
+    min-height: 100vh;      /* ★画面の高さを最少でも100%確保 */
 }
 
 /* ---------------------------------------------------
