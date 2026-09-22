@@ -29,6 +29,13 @@ body {
    ヘッダー & ユーザー情報
    --------------------------------------------------- */
 header {
+    position: fixed; /* ★画面上部に固定 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;   /* ★コンテンツより手前に表示 */
+    box-sizing: border-box; /* 横幅の崩れを防止 */
+
     background-color: rgba(17, 17, 17, 0.95);
     backdrop-filter: blur(5px);
     padding: 15px 20px;
@@ -73,10 +80,13 @@ h1 {
    --------------------------------------------------- */
 .container {
     max-width: 900px;
-    margin: 100px auto;
+    
+    /* 🟢 上下の余白（位置）を調整する部分 */
+    /* 1つ目の数値（80px）が「ヘッダーからの上の余白（位置）」です */
+    margin: 80px auto 40px auto; 
+    
     padding: 0 15px;
 }
-
 h2 {
     border-left: 4px solid #00ffcc;
     padding-left: 10px;
@@ -586,7 +596,8 @@ h2 {
     /* 🟢 3. 投稿フォームやカードの余白を少し詰める */
     .container {
         padding: 0 10px;
-        margin: 15px auto;
+        /* スマホ用：ヘッダーが高くなる分、上余白（140pxなど）を少し広げる */
+        margin: 140px auto 20px auto;
     }
 
     .post-form, .card {
