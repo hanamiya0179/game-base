@@ -94,10 +94,10 @@ async function countUp(buttonElement) {
 // 投稿数に応じたランク情報を返す関数
 function getRankInfo(postCount) {
     if (postCount >= 30) return { name: '御意見番', class: 'rank-legend' };
-    if (postCount >= 20) return { name: '首領',     class: 'rank-boss' };
-    if (postCount >= 10) return { name: '参謀',     class: 'rank-staff' };
-    if (postCount >= 5)  return { name: '幹部',     class: 'rank-exec' };
-    if (postCount >= 1)  return { name: '構成員',   class: 'rank-member' };
+    if (postCount >= 20) return { name: '首領', class: 'rank-boss' };
+    if (postCount >= 10) return { name: '参謀', class: 'rank-staff' };
+    if (postCount >= 5) return { name: '幹部', class: 'rank-exec' };
+    if (postCount >= 1) return { name: '構成員', class: 'rank-member' };
     return { name: '見習い', class: 'rank-apprentice' };
 }
 
@@ -173,7 +173,7 @@ function initWebAudio() {
     Object.keys(bgms).forEach(key => {
         const audio = bgms[key];
         audio.loop = true;
-        
+
         // Audio要素からソースノードを作成してGainNodeに接続
         const source = audioCtx.createMediaElementSource(audio);
         source.connect(gainNode);
@@ -187,7 +187,7 @@ let currentBGMKey = 'main'; // 現在再生中のBGMキー
 // 🟢 ユーザーがスライダーを動かした時に呼ばれる関数
 function changeVolume(val) {
     currentVolume = parseFloat(val); // 0.0 〜 1.0 の数値に変換
-    
+
     // Web Audio APIのGainNode経由で音量を変更（iOSでも効く）
     if (gainNode && audioCtx) {
         gainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
@@ -223,11 +223,18 @@ function toggleBGM() {
 
 // 🟢 指定されたBGMを再生する内部関数
 function playCurrentBGM() {
+    // iOS対策：停止している AudioContext を復帰させる
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+
     const bgmBtn = document.getElementById('bgm-btn');
     bgms[currentBGMKey].play().then(() => {
         isBGMPlaying = true;
-        bgmBtn.innerText = '🔊 BGM: ON';
-        bgmBtn.classList.add('playing');
+        if (bgmBtn) {
+            bgmBtn.innerText = '🔊 BGM: ON';
+            bgmBtn.classList.add('playing');
+        }
     }).catch(err => {
         console.log('BGM再生エラー:', err);
     });
@@ -387,7 +394,7 @@ if (galleryForm) {
             const { data: dbData, error: dbError } = await window.supabaseClient
                 .from('galleries')
                 .insert([{ title: title, image_url: urlData.publicUrl }])
-                .select(); // ← ここを追加！
+                .select();
 
             if (dbError) {
                 // エラーの詳細メッセージを詳しく表示させる
