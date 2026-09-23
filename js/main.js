@@ -419,27 +419,32 @@ if (galleryForm) {
 }
 
 // ---------------------------------------------------
-// 🎰 ガチャ実行処理（iOS非同期タイミング＆BGM重複対策版）
+// 🎰 ガチャ実行＆モーダル表示処理（iOS完全対応版）
 // ---------------------------------------------------
 function playGacha() {
-    // 💡 ボタンを押した直後の同期処理で AudioContext を確実に再開させておく
+    // ボタンを押した瞬間に Web Audio API をアクティブ化
     initWebAudio();
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
 
-    // iOSの音声ロックを回避するため、ほんの少し遅らせて alert を出す
-    setTimeout(() => {
-        alert('🎉 SSR称号［神引きの主］を獲得しました！（ダミー演出）');
+    // 表示メッセージの設定
+    const modalMsg = document.getElementById('gacha-modal-msg');
+    if (modalMsg) {
+        modalMsg.innerText = '🎉 SSR称号［神引きの主］を獲得しました！';
+    }
 
-        // alert 閉じ後に AudioContext の復帰を再確認
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+    // オリジナルダイアログを表示（alertを使わないのでBGMが止まらない）
+    const modal = document.getElementById('gacha-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
 
-        // BGM再生中であれば、安全に再開させる
-        if (isBGMPlaying) {
-            playCurrentBGM();
-        }
-    }, 50);
+// 🟢 ダイアログを閉じる処理
+function closeGachaModal() {
+    const modal = document.getElementById('gacha-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
