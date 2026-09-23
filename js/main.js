@@ -213,8 +213,10 @@ function toggleBGM() {
         // 再生中なら現在の曲を一時停止
         bgms[currentBGMKey].pause();
         isBGMPlaying = false;
-        bgmBtn.innerText = '🔇 BGM: OFF';
-        bgmBtn.classList.remove('playing');
+        if (bgmBtn) {
+            bgmBtn.innerText = '🔇 BGM: OFF';
+            bgmBtn.classList.remove('playing');
+        }
     } else {
         // 停止中なら現在の曲を再生
         playCurrentBGM();
@@ -229,6 +231,10 @@ function playCurrentBGM() {
     }
 
     const bgmBtn = document.getElementById('bgm-btn');
+    
+    // 一度すべてのAudioを一時停止してバグ（重なり）を防ぐ
+    Object.values(bgms).forEach(audio => audio.pause());
+
     bgms[currentBGMKey].play().then(() => {
         isBGMPlaying = true;
         if (bgmBtn) {
@@ -413,23 +419,27 @@ if (galleryForm) {
 }
 
 // ---------------------------------------------------
-// 🎰 ガチャ実行処理（iOSのBGM停止対策付き）
+// 🎰 ガチャ実行処理（iOS非同期タイミング＆BGM重複対策版）
 // ---------------------------------------------------
 function playGacha() {
-    // 💡【最重要】ボタンを押した瞬間に Web Audio API を復帰・活性化させる
+    // 💡 ボタンを押した直後の同期処理で AudioContext を確実に再開させておく
     initWebAudio();
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
 
-    // ガチャ結果の表示
-    alert('🎉 SSR称号［神引きの主］を獲得しました！（ダミー演出）');
+    // iOSの音声ロックを回避するため、ほんの少し遅らせて alert を出す
+    setTimeout(() => {
+        alert('🎉 SSR称号［神引きの主］を獲得しました！（ダミー演出）');
 
-    // alert閉じた後もBGMが止まらないよう再オープン＆再生
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-    if (isBGMPlaying) {
-        playCurrentBGM();
-    }
+        // alert 閉じ後に AudioContext の復帰を再確認
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        // BGM再生中であれば、安全に再開させる
+        if (isBGMPlaying) {
+            playCurrentBGM();
+        }
+    }, 50);
 }
