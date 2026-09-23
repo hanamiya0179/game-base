@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ゲーム攻略基地</title>
     <!-- 外にある style.css を読み込みます -->
+
+    <!-- 📱 👈 ここを追加！ホーム画面追加用のアイコン設定 -->
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.jpg">
     <link rel="stylesheet" href="css/style.css">
     <!-- 🟢 CDNからSupabaseのライブラリを読み込みます -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -204,8 +207,7 @@
                         <span></span>
                     </div>
 
-                    <button class="btn btn-gacha" onclick="alert('🎉 SSR称号［神引きの主］を獲得しました！（ダミー演出）')">1回ガチャを回す
-                        (100pt)</button>
+                    <button class="btn btn-gacha" onclick="playGacha()">1回ガチャを回す (100pt)</button>
                 </div>
             </section>
         </div>

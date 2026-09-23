@@ -411,3 +411,25 @@ if (galleryForm) {
         }
     });
 }
+
+// ---------------------------------------------------
+// 🎰 ガチャ実行処理（iOSのBGM停止対策付き）
+// ---------------------------------------------------
+function playGacha() {
+    // 💡【最重要】ボタンを押した瞬間に Web Audio API を復帰・活性化させる
+    initWebAudio();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+
+    // ガチャ結果の表示
+    alert('🎉 SSR称号［神引きの主］を獲得しました！（ダミー演出）');
+
+    // alert閉じた後もBGMが止まらないよう再オープン＆再生
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    if (isBGMPlaying) {
+        playCurrentBGM();
+    }
+}
