@@ -251,3 +251,141 @@ function changeBGMForTab(tabName) {
         playCurrentBGM();
     }
 }
+
+// ===================================================
+// 📤 投稿機能の実装 (Supabase Data & Storage)
+// ===================================================
+
+// ---------------------------------------------------
+// 1. 最強構成の投稿機能
+// ---------------------------------------------------
+const buildForm = document.getElementById('form-build');
+if (buildForm) {
+    buildForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const game = document.getElementById('build-game').value;
+        const title = document.getElementById('build-title').value;
+        const tag = document.getElementById('build-tag').value;
+        const detail = document.getElementById('build-detail').value;
+
+        if (!window.supabaseClient) {
+            alert('Supabaseの初期化に失敗しています。');
+            return;
+        }
+
+        // Supabase の builds テーブルへ保存
+        const { data, error } = await window.supabaseClient
+            .from('builds')
+            .insert([{ game_title: game, title: title, tag: tag, detail: detail }]);
+
+        if (error) {
+            console.error('投稿エラー:', error.message);
+            alert('投稿に失敗しました。');
+        } else {
+            alert('🎉 最強構成を投稿しました！');
+            buildForm.reset();
+        }
+    });
+}
+
+// ---------------------------------------------------
+// 2. ハイライト（画像＋タイトル）の投稿機能
+// ---------------------------------------------------
+const galleryForm = document.getElementById('form-gallery');
+if (galleryForm) {
+    galleryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('gallery-title').value;
+        const fileInput = document.getElementById('gallery-image');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert('画像を選択してください。');
+            return;
+        }
+
+        try {
+            // ① 画像を Supabase Storage (gallery-images バケット) にアップロード
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `uploads/${fileName}`;
+
+            const { error: uploadError } = await window.supabaseClient
+                .storage
+                .from('gallery-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // ② アップロードした画像の公開URLを取得
+            const { data: urlData } = window.supabaseClient
+                .storage
+                .from('gallery-images')
+                .getPublicUrl(filePath);
+
+            const imageUrl = urlData.publicUrl;
+
+            // ③ テーブル (galleries) にタイトルと画像URLを保存
+            const { error: dbError } = await window.supabaseClient
+                .from('galleries')
+                .insert([{ title: title, image_url: imageUrl }]);
+
+            if (dbError) throw dbError;
+
+            alert('🎉 ハイライトを投稿しました！');
+            galleryForm.reset();
+            loadGalleries(); // 投稿後に一覧を再読み込み
+
+        } catch (err) {
+            console.error('投稿エラー:', err.message);
+            alert('投稿処理に失敗しました。');
+        }
+    });
+}
+
+// ---------------------------------------------------
+// 3. ハイライト一覧の自動読み込み・表示関数
+// ---------------------------------------------------
+async function loadGalleries() {
+    const galleryList = document.getElementById('gallery-list');
+    if (!galleryList || !window.supabaseClient) return;
+
+    const { data, error } = await window.supabaseClient
+        .from('galleries')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('読み込みエラー:', error.message);
+        return;
+    }
+
+    if (data) {
+        galleryList.innerHTML = ''; // 一旦リセット
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'gallery-card';
+            card.innerHTML = `
+                <div class="gallery-img">
+                    <img src="${item.image_url}" alt="${item.title}" style="width:100%; height:160px; object-fit:cover;">
+                </div>
+                <div class="gallery-content">
+                    <div class="gallery-title">${item.title}</div>
+                    <div class="stamp-area">
+                        <button class="stamp-btn" onclick="countUp(this)">🎉 0</button>
+                        <button class="stamp-btn" onclick="countUp(this)">😭 0</button>
+                        <button class="stamp-btn" onclick="countUp(this)">🤣 0</button>
+                    </div>
+                </div>
+            `;
+            galleryList.appendChild(card);
+        });
+    }
+}
+
+// 画面読み込み時にハイライト一覧を表示
+document.addEventListener('DOMContentLoaded', () => {
+    loadGalleries();
+});

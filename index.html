@@ -73,35 +73,28 @@
         <div id="tab-builds" class="tab-content active">
             <section class="post-form">
                 <h2>最強構成を投稿する</h2>
-                <form onsubmit="event.preventDefault(); alert('（ガワだけなのでまだ送信されません。次のステップで動かします！）');">
-                    <!-- 🟢 1. ゲームタイトルの入力欄 -->
+                <form id="form-build">
                     <div class="form-group">
                         <label>ゲームタイトル</label>
-                        <input type="text" placeholder="例：原神、モンスト など">
+                        <input type="text" id="build-game" placeholder="例：原神、モンスト など" required>
                     </div>
-
-                    <!-- 🟢 2. ビルドタイトルの入力欄 -->
                     <div class="form-group">
                         <label>構成名・タイトル</label>
-                        <input type="text" placeholder="例：ボス周回用・会心特化型">
+                        <input type="text" id="build-title" placeholder="例：ボス周回用・会心特化型" required>
                     </div>
-
-                    <!-- 3. タグ選択 -->
                     <div class="form-group">
                         <label>おすすめタグ</label>
-                        <select>
+                        <select id="build-tag">
                             <option>初心者向け</option>
                             <option>ボス周回用</option>
                             <option>ネタ・ロマン編成</option>
                         </select>
                     </div>
-
-                    <!-- 4. 詳細入力 -->
                     <div class="form-group">
                         <label>装備・スキルの詳細</label>
-                        <textarea rows="4" placeholder="武器：◯◯&#10;防具：◯◯&#10;立ち回りのコツなど..."></textarea>
+                        <textarea id="build-detail" rows="4" placeholder="武器：◯◯&#10;防具：◯◯&#10;立ち回りのコツなど..."
+                            required></textarea>
                     </div>
-
                     <button type="submit" class="btn">メンバーに共有する</button>
                 </form>
             </section>
@@ -144,48 +137,25 @@
 
         <!--3. ハイライト（ギャラリー） -->
         <div id="tab-gallery" class="tab-content">
-            <section>
-                <h2>ハイライト</h2>
-                <div class="gallery-grid">
-                    <!-- サンプルカード1 -->
-                    <div class="gallery-card">
-                        <div class="gallery-img">【ここにスクショ画像が入る】</div>
-                        <div class="gallery-content">
-                            <div class="gallery-title">奇跡のガチャ10連で神引きしたわｗｗ</div>
-                            <div class="stamp-area">
-                                <button class="stamp-btn" onclick="countUp(this)">🎉 5</button>
-                                <button class="stamp-btn" onclick="countUp(this)">😭 0</button>
-                                <button class="stamp-btn" onclick="countUp(this)">🤣 1</button>
-                            </div>
-                        </div>
+            <section class="post-form">
+                <h2>ハイライトを投稿する</h2>
+                <form id="form-gallery">
+                    <div class="form-group">
+                        <label>タイトル</label>
+                        <input type="text" id="gallery-title" placeholder="例：神引きした！" required>
                     </div>
-
-                    <!-- サンプルカード2 -->
-                    <div class="gallery-card">
-                        <div class="gallery-img">【ここにスクショ画像が入る】</div>
-                        <div class="gallery-content">
-                            <div class="gallery-title">裏ボス、残りHP1ミリで大爆死</div>
-                            <div class="stamp-area">
-                                <button class="stamp-btn" onclick="countUp(this)">🎉 0</button>
-                                <button class="stamp-btn" onclick="countUp(this)">😭 12</button>
-                                <button class="stamp-btn" onclick="countUp(this)">🤣 4</button>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>スクリーンショット画像</label>
+                        <input type="file" id="gallery-image" accept="image/*" required>
                     </div>
+                    <button type="submit" class="btn">画像を投稿する</button>
+                </form>
+            </section>
 
-                    <!-- サンプルカード3 -->
-                    <div class="gallery-card">
-                        <div class="gallery-img">【ここにスクショ画像が入る】</div>
-                        <div class="gallery-content">
-                            <div class="gallery-title">壁に埋まる謎のバグ発見した</div>
-                            <div class="stamp-area">
-                                <button class="stamp-btn" onclick="countUp(this)">🎉 0</button>
-                                <button class="stamp-btn" onclick="countUp(this)">😭 12</button>
-                                <button class="stamp-btn" onclick="countUp(this)">🤣 4</button>
-                            </div>
-                        </div>
-                    </div>
-
+            <section style="margin-top: 30px;">
+                <h2>ハイライト一覧</h2>
+                <div class="gallery-grid" id="gallery-list">
+                    <!-- ここに投稿データが動的に読み込まれます -->
                 </div>
             </section>
         </div>
