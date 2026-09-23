@@ -591,3 +591,9 @@ h2 {
 
 html, body { touch-action: manipulation; }
 input, select, textarea { font-size: 16px; }
+
+/* 🔄 引っ張って更新アイコンの回転アニメーション */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

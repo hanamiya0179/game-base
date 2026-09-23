@@ -20,6 +20,12 @@
 
 <body>
 
+    <!-- 🔄 引っ張って更新インジケーター -->
+    <div id="pull-to-refresh" style="position: fixed; top: -60px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #00ffcc; font-weight: bold; font-size: 14px; z-index: 10001; transition: top 0.2s ease, opacity 0.2s ease; opacity: 0; pointer-events: none;">
+        <span style="display: inline-block; animation: spin 1s linear infinite;">🔄</span>
+        <span id="ptr-text">引っ張って更新...</span>
+    </div>
+
     <!-- 🟢 背景固定用 -->
     <div class="bg-fixed"></div>
 

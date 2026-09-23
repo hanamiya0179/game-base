@@ -522,3 +522,91 @@ function closeGachaModal() {
         modal.style.display = 'none';
     }
 }
+
+// ---------------------------------------------------
+// 🔄 下に引っ張って最新データに更新（Pull to Refresh）
+// ---------------------------------------------------
+function initPullToRefresh() {
+    let startY = 0;
+    let currentY = 0;
+    let isPulling = false;
+    const ptrElement = document.getElementById('pull-to-refresh');
+    const ptrText = document.getElementById('ptr-text');
+    const threshold = 70; // 更新を発動させる引き下げ距離(px)
+
+    if (!ptrElement) return;
+
+    // タッチ開始
+    window.addEventListener('touchstart', (e) => {
+        // ページの一番上にいる時だけ有効
+        if (window.scrollY === 0) {
+            startY = e.touches[0].pageY;
+            isPulling = true;
+        }
+    }, { passive: true });
+
+    // タッチ移動（指を滑らせている時）
+    window.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        currentY = e.touches[0].pageY;
+        const pullDistance = currentY - startY;
+
+        // 下方向に引っ張っている場合
+        if (pullDistance > 0 && window.scrollY === 0) {
+            const moveY = Math.min(pullDistance * 0.5, 60); // 動きを少し重く演出
+            ptrElement.style.top = `${moveY - 50}px`;
+            ptrElement.style.opacity = `${Math.min(pullDistance / threshold, 1)}`;
+
+            if (pullDistance >= threshold) {
+                if (ptrText) ptrText.innerText = '放して更新...';
+            } else {
+                if (ptrText) ptrText.innerText = '引っ張って更新...';
+            }
+        }
+    }, { passive: true });
+
+    // タッチ終了（指を離した時）
+    window.addEventListener('touchend', async () => {
+        if (!isPulling) return;
+        const pullDistance = currentY - startY;
+
+        if (pullDistance >= threshold && window.scrollY === 0) {
+            // 発動条件達成！
+            ptrElement.style.top = '10px';
+            ptrElement.style.opacity = '1';
+            if (ptrText) ptrText.innerText = '更新中...';
+
+            try {
+                // 🔄 最新のハイライト一覧 ＆ スタンプ数を再読み込み
+                if (typeof loadGalleries === 'function') await loadGalleries();
+                if (typeof loadStamps === 'function') await loadStamps();
+
+                if (ptrText) ptrText.innerText = '✨ 更新完了！';
+            } catch (err) {
+                console.error('更新エラー:', err);
+                if (ptrText) ptrText.innerText = '❌ 更新失敗';
+            }
+
+            // 元の位置に戻す
+            setTimeout(() => {
+                ptrElement.style.top = '-60px';
+                ptrElement.style.opacity = '0';
+            }, 800);
+
+        } else {
+            // 距離が足りなかった場合は静かに戻す
+            ptrElement.style.top = '-60px';
+            ptrElement.style.opacity = '0';
+        }
+
+        // リセット
+        isPulling = false;
+        startY = 0;
+        currentY = 0;
+    });
+}
+
+// 🟢 画面読み込み時に初期化
+document.addEventListener('DOMContentLoaded', () => {
+    initPullToRefresh();
+});
