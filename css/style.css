@@ -406,12 +406,22 @@ h2 {
 
 .gallery-img {
     width: 100%;
-    height: 160px;
+    height: auto; /* 👈 高さを自動（元の画像比率）に変更 */
     background-color: #222;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #888;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+}
+
+/* 🟢 画像タグ自体の見切れ・潰れを確実に防止 */
+.gallery-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
 }
 
 .gallery-content {
