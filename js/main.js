@@ -128,6 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStamps();
     // ハイライト一覧の読み込みを実行
     loadGalleries();
+    // トリミング選択イベントの監視を初期化
+    initImageCropper();
 });
 
 // 例：ポイントを 250 pt に書き換える処理
@@ -326,9 +328,10 @@ async function loadGalleries() {
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'gallery-card';
+            // 💡 修正箇所：height: auto に変更し、画像を元の縦横比で見切れず表示させます
             card.innerHTML = `
                 <div class="gallery-img">
-                    <img src="${item.image_url}" alt="${item.title}" style="width:100%; height:160px; object-fit:cover;">
+                    <img src="${item.image_url}" alt="${item.title}" style="width:100%; height:auto; display:block; border-radius: 8px;">
                 </div>
                 <div class="gallery-content">
                     <div class="gallery-title">${item.title}</div>
@@ -343,6 +346,77 @@ async function loadGalleries() {
         });
     }
 }
+
+// ---------------------------------------------------
+// 🖼️ 画像トリミング編集機能の制御
+// ---------------------------------------------------
+let cropper = null;
+let croppedBlob = null; // 切り抜かれた画像データを保持
+
+function initImageCropper() {
+    const galleryFileInput = document.getElementById('gallery-image');
+    if (!galleryFileInput) return;
+
+    galleryFileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const cropImg = document.getElementById('crop-target-image');
+                if (!cropImg) return;
+                
+                cropImg.src = e.target.result;
+
+                // モーダルを表示
+                const cropModal = document.getElementById('crop-modal');
+                if (cropModal) {
+                    cropModal.style.display = 'flex';
+                }
+
+                // 既存の Cropper インスタンスがあれば破棄
+                if (cropper) cropper.destroy();
+
+                // Cropper ライブラリの初期化
+                if (typeof Cropper !== 'undefined') {
+                    cropper = new Cropper(cropImg, {
+                        viewMode: 1,
+                        autoCropArea: 0.9,
+                        responsive: true,
+                    });
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// 「決定する」ボタン（モーダル用）
+function applyCrop() {
+    if (!cropper) {
+        document.getElementById('crop-modal').style.display = 'none';
+        return;
+    }
+
+    // 切り抜き結果を Blob に変換
+    cropper.getCroppedCanvas().toBlob((blob) => {
+        croppedBlob = blob;
+        document.getElementById('crop-modal').style.display = 'none';
+    }, 'image/jpeg', 0.85);
+}
+
+// 「キャンセル」ボタン（モーダル用）
+function cancelCrop() {
+    const cropModal = document.getElementById('crop-modal');
+    if (cropModal) cropModal.style.display = 'none';
+    if (cropper) cropper.destroy();
+    
+    croppedBlob = null;
+    const fileInput = document.getElementById('gallery-image');
+    if (fileInput) fileInput.value = '';
+}
+
 
 // ---------------------------------------------------
 // 3. ハイライト（画像＋タイトル）の投稿機能
@@ -367,7 +441,8 @@ if (galleryForm) {
         }
 
         const title = titleInput.value;
-        const file = fileInput.files[0];
+        // 💡 修正箇所：切り抜かれたデータがあればそれを優先、なければ元ファイルを使用
+        const file = croppedBlob || fileInput.files[0];
 
         if (!file) {
             alert('画像を選択してください。');
@@ -375,8 +450,7 @@ if (galleryForm) {
         }
 
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
+            const fileName = `${Date.now()}.jpg`;
             const filePath = `uploads/${fileName}`;
 
             // ① ストレージへ画像アップロード
@@ -403,13 +477,13 @@ if (galleryForm) {
                 .select();
 
             if (dbError) {
-                // エラーの詳細メッセージを詳しく表示させる
                 alert('🚨 【DB保存失敗】\n' + dbError.message + '\n\nヒント: ' + (dbError.hint || 'なし'));
                 return;
             }
 
             alert('🎉 ハイライトを正常に投稿しました！');
             galleryForm.reset();
+            croppedBlob = null; // リセット
             loadGalleries(); // 投稿後に一覧を再読み込み
 
         } catch (err) {
