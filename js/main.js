@@ -126,6 +126,8 @@ window.setTestRank = setTestRank;
 document.addEventListener('DOMContentLoaded', () => {
     // スタンプデータの読み込みを実行
     loadStamps();
+    // ハイライト一覧の読み込みを実行
+    loadGalleries();
 });
 
 // 例：ポイントを 250 pt に書き換える処理
@@ -281,7 +283,7 @@ if (buildForm) {
 
         if (error) {
             console.error('投稿エラー:', error.message);
-            alert('投稿に失敗しました。');
+            alert('投稿に失敗しました: ' + error.message);
         } else {
             alert('🎉 最強構成を投稿しました！');
             buildForm.reset();
@@ -290,63 +292,7 @@ if (buildForm) {
 }
 
 // ---------------------------------------------------
-// 2. ハイライト（画像＋タイトル）の投稿機能
-// ---------------------------------------------------
-const galleryForm = document.getElementById('form-gallery');
-if (galleryForm) {
-    galleryForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const title = document.getElementById('gallery-title').value;
-        const fileInput = document.getElementById('gallery-image');
-        const file = fileInput.files[0];
-
-        if (!file) {
-            alert('画像を選択してください。');
-            return;
-        }
-
-        try {
-            // ① 画像を Supabase Storage (gallery-images バケット) にアップロード
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
-            const filePath = `uploads/${fileName}`;
-
-            const { error: uploadError } = await window.supabaseClient
-                .storage
-                .from('gallery-images')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            // ② アップロードした画像の公開URLを取得
-            const { data: urlData } = window.supabaseClient
-                .storage
-                .from('gallery-images')
-                .getPublicUrl(filePath);
-
-            const imageUrl = urlData.publicUrl;
-
-            // ③ テーブル (galleries) にタイトルと画像URLを保存
-            const { error: dbError } = await window.supabaseClient
-                .from('galleries')
-                .insert([{ title: title, image_url: imageUrl }]);
-
-            if (dbError) throw dbError;
-
-            alert('🎉 ハイライトを投稿しました！');
-            galleryForm.reset();
-            loadGalleries(); // 投稿後に一覧を再読み込み
-
-        } catch (err) {
-            console.error('投稿エラー:', err.message);
-            alert('投稿処理に失敗しました。');
-        }
-    });
-}
-
-// ---------------------------------------------------
-// 3. ハイライト一覧の自動読み込み・表示関数
+// 2. ハイライト一覧の自動読み込み・表示関数
 // ---------------------------------------------------
 async function loadGalleries() {
     const galleryList = document.getElementById('gallery-list');
@@ -385,7 +331,76 @@ async function loadGalleries() {
     }
 }
 
-// 画面読み込み時にハイライト一覧を表示
-document.addEventListener('DOMContentLoaded', () => {
-    loadGalleries();
-});
+// ---------------------------------------------------
+// 3. ハイライト（画像＋タイトル）の投稿機能
+// ---------------------------------------------------
+const galleryForm = document.getElementById('form-gallery');
+
+if (galleryForm) {
+    galleryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!window.supabaseClient) {
+            alert('⚠️ エラー: Supabaseが初期化されていません。\nindex.html側のURLやAPIキーの記述、スクリプトの読み込み順を確認してください。');
+            return;
+        }
+
+        const titleInput = document.getElementById('gallery-title');
+        const fileInput = document.getElementById('gallery-image');
+
+        if (!titleInput || !fileInput) {
+            alert('⚠️ エラー: タイトル(id="gallery-title") または 画像選択(id="gallery-image") の入力欄が見つかりません。');
+            return;
+        }
+
+        const title = titleInput.value;
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert('画像を選択してください。');
+            return;
+        }
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `uploads/${fileName}`;
+
+            // ① ストレージへ画像アップロード
+            const { data: uploadData, error: uploadError } = await window.supabaseClient
+                .storage
+                .from('gallery-images')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                alert('🚨 【画像送信失敗】\nStorageの設定（バケット名や権限）に問題があります:\n' + uploadError.message);
+                return;
+            }
+
+            // ② 画像URLを取得
+            const { data: urlData } = window.supabaseClient
+                .storage
+                .from('gallery-images')
+                .getPublicUrl(filePath);
+
+            // ③ データベースへ保存
+            const { data: dbData, error: dbError } = await window.supabaseClient
+                .from('galleries')
+                .insert([{ title: title, image_url: urlData.publicUrl }])
+                .select(); // ← ここを追加！
+
+            if (dbError) {
+                // エラーの詳細メッセージを詳しく表示させる
+                alert('🚨 【DB保存失敗】\n' + dbError.message + '\n\nヒント: ' + (dbError.hint || 'なし'));
+                return;
+            }
+
+            alert('🎉 ハイライトを正常に投稿しました！');
+            galleryForm.reset();
+            loadGalleries(); // 投稿後に一覧を再読み込み
+
+        } catch (err) {
+            alert('🚨 【予期せぬエラー】\n' + err.message);
+        }
+    });
+}
