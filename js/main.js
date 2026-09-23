@@ -137,10 +137,10 @@ function updatePoints(newPoints) {
 }
 
 // ===================================================
-// 🎵 タブごとのBGM切り替え & 音量調整処理
+// 🎵 タブごとのBGM切り替え & 音量調整処理 (Web Audio API対応版)
 // ===================================================
 
-// 🟢 1. 初期音量を 0.05 (5%) に設定
+// 1. 初期音量を 0.05 (5%) に設定
 let currentVolume = 0.05;
 
 // 各画面用のBGMを用意
@@ -150,20 +150,48 @@ const bgms = {
     shop: new Audio('audio/shop.mp3')    // ショップ用
 };
 
-// 🟢 2. ループと初期音量（5%）を一括設定
-Object.values(bgms).forEach(audio => {
-    audio.loop = true;
-    audio.volume = currentVolume; // ここを 0.1 から currentVolume に変更
-});
+// 🟢 Web Audio API の初期化（iOS音量調整用）
+let audioCtx = null;
+let gainNode = null;
+const trackSources = {};
+
+function initWebAudio() {
+    if (audioCtx) return; // 既に初期化済みならスキップ
+
+    // AudioContext の作成
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+
+    // 音量調整用の GainNode を作成
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = currentVolume; // 初期音量を設定
+    gainNode.connect(audioCtx.destination); // スピーカーに接続
+
+    // 各 Audio 要素を GainNode に接続
+    Object.keys(bgms).forEach(key => {
+        const audio = bgms[key];
+        audio.loop = true;
+        
+        // Audio要素からソースノードを作成してGainNodeに接続
+        const source = audioCtx.createMediaElementSource(audio);
+        source.connect(gainNode);
+        trackSources[key] = source;
+    });
+}
 
 let isBGMPlaying = false;
 let currentBGMKey = 'main'; // 現在再生中のBGMキー
 
-// 🟢 3. ユーザーがスライダーを動かした時に呼ばれる関数（追加！）
+// 🟢 ユーザーがスライダーを動かした時に呼ばれる関数
 function changeVolume(val) {
     currentVolume = parseFloat(val); // 0.0 〜 1.0 の数値に変換
     
-    // 登録されている全てのBGMの音量を一括で更新
+    // Web Audio APIのGainNode経由で音量を変更（iOSでも効く）
+    if (gainNode && audioCtx) {
+        gainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+    }
+
+    // 従来のプロパティ変更もフォールバックとして残す
     Object.values(bgms).forEach(audio => {
         audio.volume = currentVolume;
     });
@@ -171,6 +199,12 @@ function changeVolume(val) {
 
 // 🟢 BGMのON/OFF切り替え（ヘッダーのボタン用）
 function toggleBGM() {
+    // 初回ユーザー操作時に Web Audio API を起動（iOSの自動再生・サスペンド対策）
+    initWebAudio();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+
     const bgmBtn = document.getElementById('bgm-btn');
 
     if (isBGMPlaying) {
@@ -199,7 +233,6 @@ function playCurrentBGM() {
 
 // 🟢 タブ切り替え時にBGMを変更する処理
 function changeBGMForTab(tabName) {
-    // 開いたタブに応じて曲の種類を決める
     let targetBGMKey = 'main';
     if (tabName === 'gacha') {
         targetBGMKey = 'gacha';
@@ -207,17 +240,13 @@ function changeBGMForTab(tabName) {
         targetBGMKey = 'shop';
     }
 
-    // すでに同じ曲が流れているなら何もしない
     if (targetBGMKey === currentBGMKey) return;
 
-    // 前の曲を止めて再生位置を先頭に戻す
     bgms[currentBGMKey].pause();
     bgms[currentBGMKey].currentTime = 0;
 
-    // 曲を切り替える
     currentBGMKey = targetBGMKey;
 
-    // もし元々BGMがONになっていたら、そのまま新しい曲を再生開始
     if (isBGMPlaying) {
         playCurrentBGM();
     }
