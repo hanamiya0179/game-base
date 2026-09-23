@@ -532,29 +532,45 @@ function initPullToRefresh() {
     let isPulling = false;
     const ptrElement = document.getElementById('pull-to-refresh');
     const ptrText = document.getElementById('ptr-text');
-    const threshold = 70; // 更新を発動させる引き下げ距離(px)
+    const threshold = 70; // 発動に必要なスワイプ距離(px)
 
     if (!ptrElement) return;
 
+    // ヘッダーの高さを取得（固定ヘッダーの下に綺麗に出すため）
+    const getHeaderHeight = () => {
+        const header = document.querySelector('header');
+        return header ? header.offsetHeight : 80;
+    };
+
+    // 初期位置の設定（ヘッダーの直下に配置）
+    const resetPosition = () => {
+        const headerHeight = getHeaderHeight();
+        ptrElement.style.top = `${headerHeight + 5}px`;
+        ptrElement.style.transform = 'translateY(-20px)';
+        ptrElement.style.opacity = '0';
+    };
+
+    // 画面読み込み時に初期位置を計算
+    resetPosition();
+
     // タッチ開始
     window.addEventListener('touchstart', (e) => {
-        // ページの一番上にいる時だけ有効
         if (window.scrollY === 0) {
             startY = e.touches[0].pageY;
             isPulling = true;
+            resetPosition(); // タッチ開始時に最新のヘッダー高さで位置リセット
         }
     }, { passive: true });
 
-    // タッチ移動（指を滑らせている時）
+    // タッチ移動中
     window.addEventListener('touchmove', (e) => {
         if (!isPulling) return;
         currentY = e.touches[0].pageY;
         const pullDistance = currentY - startY;
 
-        // 下方向に引っ張っている場合
         if (pullDistance > 0 && window.scrollY === 0) {
-            const moveY = Math.min(pullDistance * 0.5, 60); // 動きを少し重く演出
-            ptrElement.style.top = `${moveY - 50}px`;
+            const moveY = Math.min(pullDistance * 0.4, 35); // スワイプ時の移動量
+            ptrElement.style.transform = `translateY(${moveY - 20}px)`;
             ptrElement.style.opacity = `${Math.min(pullDistance / threshold, 1)}`;
 
             if (pullDistance >= threshold) {
@@ -565,19 +581,19 @@ function initPullToRefresh() {
         }
     }, { passive: true });
 
-    // タッチ終了（指を離した時）
+    // タッチ終了（指を離したとき）
     window.addEventListener('touchend', async () => {
         if (!isPulling) return;
         const pullDistance = currentY - startY;
 
         if (pullDistance >= threshold && window.scrollY === 0) {
-            // 発動条件達成！
-            ptrElement.style.top = '10px';
+            // 更新発動時の位置
+            ptrElement.style.transform = 'translateY(10px)';
             ptrElement.style.opacity = '1';
             if (ptrText) ptrText.innerText = '更新中...';
 
             try {
-                // 🔄 最新のハイライト一覧 ＆ スタンプ数を再読み込み
+                // 最新データを再読み込み
                 if (typeof loadGalleries === 'function') await loadGalleries();
                 if (typeof loadStamps === 'function') await loadStamps();
 
@@ -587,26 +603,18 @@ function initPullToRefresh() {
                 if (ptrText) ptrText.innerText = '❌ 更新失敗';
             }
 
-            // 元の位置に戻す
+            // 少し待ってから元の位置に隠す
             setTimeout(() => {
-                ptrElement.style.top = '-60px';
-                ptrElement.style.opacity = '0';
+                resetPosition();
             }, 800);
 
         } else {
-            // 距離が足りなかった場合は静かに戻す
-            ptrElement.style.top = '-60px';
-            ptrElement.style.opacity = '0';
+            // 引っ張りが足りなかった場合
+            resetPosition();
         }
 
-        // リセット
         isPulling = false;
         startY = 0;
         currentY = 0;
     });
 }
-
-// 🟢 画面読み込み時に初期化
-document.addEventListener('DOMContentLoaded', () => {
-    initPullToRefresh();
-});
