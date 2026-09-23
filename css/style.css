@@ -230,13 +230,13 @@ h2 {
     margin-top: 0;
 }
 
+/* 🟢 タブメニュー全体 */
 .tab-menu {
     display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 0;
-    margin-bottom: 15px !important; 
+    flex-wrap: wrap;       /* 画面幅に応じて折り返す */
+    align-items: center;   /* 上下中央揃え */
+    gap: 8px;              /* 要素同士のすき間 */
+    margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
@@ -248,6 +248,7 @@ h2 {
     }
 }
 
+/* 🟢 タブボタンのスタイル（高さ計算・フォント・パディングを統一） */
 .tab-btn {
     background: rgba(38, 38, 38, 0.8);
     border: 1px solid #444;
@@ -259,6 +260,11 @@ h2 {
     font-weight: bold;
     transition: all 0.2s ease;
     flex: 0 0 auto;
+    box-sizing: border-box; /* パディングを含めた正確な高さ指定 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;       /* 行高を揃えてズレを防ぐ */
 }
 
 .tab-btn:hover {
@@ -527,22 +533,37 @@ h2 {
     100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 15px #ffd700; }
 }
 
-/* 🪙 所持ポイント表示 */
+/* 🟢 🪙 所持ポイント表示（.tab-btn と高さを完全一致） */
 .point-badge {
-    margin-left: auto; height: 41px; box-sizing: border-box; display: flex; align-items: center; gap: 6px;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 35, 10, 0.95));
-    border: 1px solid #ffd700; color: #ffd700; padding: 0 14px; border-radius: 6px; font-weight: bold;
-    font-size: 14px; backdrop-filter: blur(8px); box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-    white-space: nowrap; align-self: center; margin-top: 0 !important;
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    padding: 10px 20px;     /* .tab-btn と揃える */
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 15px;        /* .tab-btn と揃える */
+    line-height: 1.2;       /* .tab-btn と揃える */
+    box-sizing: border-box;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    white-space: nowrap;
+    flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
     .point-badge {
-        flex: 0 0 auto;
         margin-left: 0;
-        height: 31px;
-        font-size: 12px;
-        padding: 0 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 13px;
     }
 }
 
