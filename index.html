@@ -13,7 +13,7 @@
     <!-- 🖼️ 画像編集ライブラリ Cropper.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    
+
     <!-- 🟢 CDNからSupabaseのライブラリを読み込みます -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -98,7 +98,8 @@
                     </div>
                     <div class="form-group">
                         <label>装備・スキルの詳細</label>
-                        <textarea id="build-detail" rows="4" placeholder="武器：◯◯&#10;防具：◯◯&#10;立ち回りのコツなど..." required></textarea>
+                        <textarea id="build-detail" rows="4" placeholder="武器：◯◯&#10;防具：◯◯&#10;立ち回りのコツなど..."
+                            required></textarea>
                     </div>
                     <button type="submit" class="btn">メンバーに共有する</button>
                 </form>
@@ -221,24 +222,31 @@
     </div>
 
     <!-- 🎰 ガチャ結果表示用モーダル -->
-    <div id="gacha-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
-        <div style="background: #1e1e2f; border: 2px solid #00ffcc; border-radius: 12px; padding: 25px; text-align: center; max-width: 80%; box-shadow: 0 0 20px rgba(0,255,204,0.4);">
+    <div id="gacha-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
+        <div
+            style="background: #1e1e2f; border: 2px solid #00ffcc; border-radius: 12px; padding: 25px; text-align: center; max-width: 80%; box-shadow: 0 0 20px rgba(0,255,204,0.4);">
             <h3 style="color: #00ffcc; margin-top: 0; font-size: 20px;">🎰 ガチャ結果</h3>
             <p id="gacha-modal-msg" style="color: #fff; font-size: 16px; margin: 20px 0;"></p>
-            <button onclick="closeGachaModal()" class="btn" style="width: 100%; max-width: 150px; font-weight: bold;">OK</button>
+            <button onclick="closeGachaModal()" class="btn"
+                style="width: 100%; max-width: 150px; font-weight: bold;">OK</button>
         </div>
     </div>
 
     <!-- 🖼️ 画像トリミング編集モーダル -->
-    <div id="crop-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: #1e1e2f; border: 2px solid #00ffcc; border-radius: 12px; padding: 20px; text-align: center; width: 100%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box;">
+    <div id="crop-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;">
+        <div
+            style="background: #1e1e2f; border: 2px solid #00ffcc; border-radius: 12px; padding: 20px; text-align: center; width: 90%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; margin: auto;">
             <h3 style="color: #00ffcc; margin: 0;">画像を編集・トリミング</h3>
-            <div style="max-height: 50vh; overflow: hidden; background: #000; border-radius: 8px;">
+            <div style="max-height: 55vh; overflow: hidden; background: #000; border-radius: 8px;">
                 <img id="crop-target-image" src="" style="max-width: 100%; display: block;">
             </div>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="btn" onclick="applyCrop()" style="flex: 1; font-weight: bold;">決定する</button>
-                <button type="button" class="btn" onclick="cancelCrop()" style="background: #555; border-color: #777; color: #fff; flex: 1;">キャンセル</button>
+                <button type="button" class="btn" onclick="applyCrop()"
+                    style="flex: 1; font-weight: bold;">決定する</button>
+                <button type="button" class="btn" onclick="cancelCrop()"
+                    style="background: #555; border-color: #777; color: #fff; flex: 1;">キャンセル</button>
             </div>
         </div>
     </div>
