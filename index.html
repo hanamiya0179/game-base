@@ -234,19 +234,15 @@
     </div>
 
     <!-- 🖼️ 画像トリミング編集モーダル -->
-    <div id="crop-modal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;">
-        <div
-            style="background: #1e1e2f; border: 2px solid #00ffcc; border-radius: 12px; padding: 20px; text-align: center; width: 90%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; margin: auto;">
+    <div id="crop-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;">
+        <div style="background: #1e1e2f; border: 2px solid #00ffcc; border-radius: 12px; padding: 20px; text-align: center; width: 90%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; margin: auto;">
             <h3 style="color: #00ffcc; margin: 0;">画像を編集・トリミング</h3>
             <div style="max-height: 55vh; overflow: hidden; background: #000; border-radius: 8px;">
                 <img id="crop-target-image" src="" style="max-width: 100%; display: block;">
             </div>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="btn" onclick="applyCrop()"
-                    style="flex: 1; font-weight: bold;">決定する</button>
-                <button type="button" class="btn" onclick="cancelCrop()"
-                    style="background: #555; border-color: #777; color: #fff; flex: 1;">キャンセル</button>
+                <button type="button" class="btn" onclick="applyCrop()" style="flex: 1; font-weight: bold;">決定する</button>
+                <button type="button" class="btn" onclick="cancelCrop()" style="background: #555; border-color: #777; color: #fff; flex: 1;">キャンセル</button>
             </div>
         </div>
     </div>
