@@ -130,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadGalleries();
     // トリミング選択イベントの監視を初期化
     initImageCropper();
+    // 🔄 引っ張って更新機能を初期化（ここを追加！）
+    initPullToRefresh();
 });
 
 // 例：ポイントを 250 pt に書き換える処理
@@ -328,7 +330,6 @@ async function loadGalleries() {
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'gallery-card';
-            // 💡 修正箇所：height: auto に変更し、画像を元の縦横比で見切れず表示させます
             card.innerHTML = `
                 <div class="gallery-img">
                     <img src="${item.image_url}" alt="${item.title}" style="width:100%; height:auto; display:block; border-radius: 8px;">
@@ -441,7 +442,6 @@ if (galleryForm) {
         }
 
         const title = titleInput.value;
-        // 💡 修正箇所：切り抜かれたデータがあればそれを優先、なければ元ファイルを使用
         const file = croppedBlob || fileInput.files[0];
 
         if (!file) {
@@ -496,26 +496,22 @@ if (galleryForm) {
 // 🎰 ガチャ実行＆モーダル表示処理（iOS完全対応版）
 // ---------------------------------------------------
 function playGacha() {
-    // ボタンを押した瞬間に Web Audio API をアクティブ化
     initWebAudio();
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
 
-    // 表示メッセージの設定
     const modalMsg = document.getElementById('gacha-modal-msg');
     if (modalMsg) {
         modalMsg.innerText = '🎉 SSR称号［神引きの主］を獲得しました！';
     }
 
-    // オリジナルダイアログを表示（alertを使わないのでBGMが止まらない）
     const modal = document.getElementById('gacha-modal');
     if (modal) {
         modal.style.display = 'flex';
     }
 }
 
-// 🟢 ダイアログを閉じる処理
 function closeGachaModal() {
     const modal = document.getElementById('gacha-modal');
     if (modal) {
@@ -532,25 +528,25 @@ function initPullToRefresh() {
     let isPulling = false;
     const ptrElement = document.getElementById('pull-to-refresh');
     const ptrText = document.getElementById('ptr-text');
-    const threshold = 70; // 発動に必要なスワイプ距離(px)
+    const threshold = 70; // スワイプに必要な距離(px)
 
     if (!ptrElement) return;
 
-    // ヘッダーの高さを取得（固定ヘッダーの下に綺麗に出すため）
+    // ヘッダーの高さを取得して、その真下にインジケーターを配置する関数
     const getHeaderHeight = () => {
         const header = document.querySelector('header');
-        return header ? header.offsetHeight : 80;
+        return header ? header.offsetHeight : 90;
     };
 
-    // 初期位置の設定（ヘッダーの直下に配置）
+    // 位置のリセット（ヘッダー直下に隠す）
     const resetPosition = () => {
-        const headerHeight = getHeaderHeight();
-        ptrElement.style.top = `${headerHeight + 5}px`;
-        ptrElement.style.transform = 'translateY(-20px)';
+        const baseTop = getHeaderHeight();
+        ptrElement.style.top = `${baseTop}px`;
+        ptrElement.style.transform = 'translateY(-30px)';
         ptrElement.style.opacity = '0';
     };
 
-    // 画面読み込み時に初期位置を計算
+    // 初期位置を設定
     resetPosition();
 
     // タッチ開始
@@ -558,7 +554,7 @@ function initPullToRefresh() {
         if (window.scrollY === 0) {
             startY = e.touches[0].pageY;
             isPulling = true;
-            resetPosition(); // タッチ開始時に最新のヘッダー高さで位置リセット
+            resetPosition(); // タッチ開始時に最新のヘッダー高さで位置設定
         }
     }, { passive: true });
 
@@ -569,8 +565,8 @@ function initPullToRefresh() {
         const pullDistance = currentY - startY;
 
         if (pullDistance > 0 && window.scrollY === 0) {
-            const moveY = Math.min(pullDistance * 0.4, 35); // スワイプ時の移動量
-            ptrElement.style.transform = `translateY(${moveY - 20}px)`;
+            const moveY = Math.min(pullDistance * 0.45, 45); // 指の動きに追従
+            ptrElement.style.transform = `translateY(${moveY - 30}px)`;
             ptrElement.style.opacity = `${Math.min(pullDistance / threshold, 1)}`;
 
             if (pullDistance >= threshold) {
@@ -587,7 +583,7 @@ function initPullToRefresh() {
         const pullDistance = currentY - startY;
 
         if (pullDistance >= threshold && window.scrollY === 0) {
-            // 更新発動時の位置
+            // 🔄 更新処理発動！
             ptrElement.style.transform = 'translateY(10px)';
             ptrElement.style.opacity = '1';
             if (ptrText) ptrText.innerText = '更新中...';
@@ -603,13 +599,13 @@ function initPullToRefresh() {
                 if (ptrText) ptrText.innerText = '❌ 更新失敗';
             }
 
-            // 少し待ってから元の位置に隠す
+            // 少し待ってからスーッと元の位置に戻す
             setTimeout(() => {
                 resetPosition();
             }, 800);
 
         } else {
-            // 引っ張りが足りなかった場合
+            // 引き下げ距離が足りなかった場合
             resetPosition();
         }
 

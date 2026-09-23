@@ -20,9 +20,9 @@
 
 <body>
 
-    <!-- 🔄 引っ張って更新インジケーター -->
+    <!-- 🔄 引っ張って更新インジケーター（位置・見た目を最適化） -->
     <div id="pull-to-refresh"
-        style="position: fixed; top: 60px; left: 0; width: 100%; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #00ffcc; font-weight: bold; font-size: 13px; z-index: 999; transition: transform 0.2s ease, opacity 0.2s ease; opacity: 0; pointer-events: none;">
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #00ffcc; font-weight: bold; font-size: 13px; z-index: 999; transition: transform 0.2s ease, opacity 0.2s ease; opacity: 0; pointer-events: none;">
         <span style="display: inline-block; animation: spin 1s linear infinite;">🔄</span>
         <span id="ptr-text">引っ張って更新...</span>
     </div>
@@ -258,7 +258,7 @@
         </div>
     </div>
 
-    <!-- 🟢 スクリプトの読み込み（最後に1回だけ記述） -->
+    <!-- 🟢 スクリプトの読み込み -->
     <script src="js/supabase.js"></script>
     <script src="js/main.js"></script>
 
