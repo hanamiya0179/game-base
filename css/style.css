@@ -213,7 +213,7 @@ h1 {
     padding: 0 15px;
 }
 
-/* スマホ時の上部マージン（3行ヘッダー分広げる） */
+/* スマホ時の上部マージン */
 @media (max-width: 768px) {
     .container {
         padding: 0 10px;
@@ -230,12 +230,12 @@ h2 {
     margin-top: 0;
 }
 
-/* 🟢 タブメニュー全体 */
+/* 🟢 タブメニュー全体（iPad等で改行されても上下中央揃えを維持） */
 .tab-menu {
     display: flex;
-    flex-wrap: wrap;       /* 画面幅に応じて折り返す */
-    align-items: center;   /* 上下中央揃え */
-    gap: 8px;              /* 要素同士のすき間 */
+    flex-wrap: wrap;
+    align-items: center;   /* ★要素同士の縦方向の中心軸を強制的に合わせる★ */
+    gap: 8px;              /* 要素同士の上下左右のすき間 */
     margin-bottom: 20px;
 }
 
@@ -248,7 +248,7 @@ h2 {
     }
 }
 
-/* 🟢 タブボタンのスタイル（高さ計算・フォント・パディングを統一） */
+/* 🟢 タブボタンのスタイル */
 .tab-btn {
     background: rgba(38, 38, 38, 0.8);
     border: 1px solid #444;
@@ -260,11 +260,12 @@ h2 {
     font-weight: bold;
     transition: all 0.2s ease;
     flex: 0 0 auto;
-    box-sizing: border-box; /* パディングを含めた正確な高さ指定 */
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    line-height: 1.2;       /* 行高を揃えてズレを防ぐ */
+    line-height: 1;         /* 高さを厳密にコントロール */
+    height: 42px;           /* ★ボタンの高さを明確に固定★ */
 }
 
 .tab-btn:hover {
@@ -533,9 +534,11 @@ h2 {
     100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 15px #ffd700; }
 }
 
-/* 🟢 🪙 所持ポイント表示（.tab-btn と高さを完全一致） */
+/* ---------------------------------------------------
+   🪙 所持ポイント表示（ボタンと完全同一の高さ・基準で固定）
+   --------------------------------------------------- */
 .point-badge {
-    margin-left: auto;
+    margin-left: auto;      /* 横1列で収まる時は右端に寄せる */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -543,26 +546,32 @@ h2 {
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 35, 10, 0.95));
     border: 1px solid #ffd700;
     color: #ffd700;
-    padding: 10px 20px;     /* .tab-btn と揃える */
+    padding: 0 20px;
     border-radius: 6px;
     font-weight: bold;
-    font-size: 15px;        /* .tab-btn と揃える */
-    line-height: 1.2;       /* .tab-btn と揃える */
+    font-size: 15px;
+    line-height: 1;
     box-sizing: border-box;
+    height: 42px;           /* ★.tab-btn と全く同じ高さに指定★ */
     backdrop-filter: blur(8px);
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
     white-space: nowrap;
     flex: 0 0 auto;
 }
 
-@media (max-width: 768px) {
+/* 📱 タブレット縦画面〜スマホサイズ向けのメディアクエリ */
+@media (max-width: 1024px) {
+    /* 改行時に右端に浮いてズレるのを防ぐ設定 */
     .point-badge {
-        margin-left: 0;
-        padding: 8px 12px;
-        font-size: 13px;
+        margin-left: 0; 
     }
-    .tab-btn {
-        padding: 8px 12px;
+}
+
+@media (max-width: 768px) {
+    .tab-btn,
+    .point-badge {
+        height: 36px;       /* スマホ画面では一括で36pxに縮小 */
+        padding: 0 12px;
         font-size: 13px;
     }
 }
